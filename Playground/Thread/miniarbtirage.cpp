@@ -13,7 +13,7 @@ struct Prices{
 
 std::mutex price_data_access_lock;
 
-void update_price(Prices& price_ds, const int& i_value, std::atomic<bool>& continue_running){
+void update_price(Prices& price_ds, int i_value, std::atomic<bool>& continue_running){
     
     while(continue_running){
         /*Generate Random Number*/
@@ -27,7 +27,6 @@ void update_price(Prices& price_ds, const int& i_value, std::atomic<bool>& conti
         std::cout << price_ds.prices[i_value] << std::endl;
         
     }
-    
 }
 
 int main(){
