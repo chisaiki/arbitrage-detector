@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include <random>
 
@@ -12,10 +13,9 @@ struct Prices{
 
 std::mutex price_data_access_lock;
 
-void update_price(Prices& price_ds, const int& i_value){
-    int repeat = 100;
+void update_price(Prices& price_ds, const int& i_value, std::atomic<bool>& continue_running){
     
-    while(repeat > 0){
+    while(continue_running){
         /*Generate Random Number*/
         std::random_device rd;  // Non-deterministic seed
         std::mt19937 gen(rd()); // Mersenne Twister engine
@@ -26,7 +26,6 @@ void update_price(Prices& price_ds, const int& i_value){
         
         std::cout << price_ds.prices[i_value] << std::endl;
         
-        repeat--;
     }
     
 }
@@ -34,13 +33,18 @@ void update_price(Prices& price_ds, const int& i_value){
 int main(){
 
     Prices price_tracker{};
+    std::atomic<bool> keep_running = true;
 
     //create threads
     std::thread get_price_threads[2];
 
     for (int i = 0; i < 2; i++) {
-        get_price_threads[i] = std::thread(update_price, std::ref(price_tracker), i);
+        get_price_threads[i] = std::thread(update_price, std::ref(price_tracker), i, std::ref(keep_running));
     }
+
+    /*Threds will continue to run until a user presses enter on the keyboard*/
+    std::cin.get();
+    keep_running = false;
 
     /*Close Threads*/
     for(int i = 0; i < 2; i++){

@@ -26,5 +26,52 @@ Start with the simplest possible version:
 - **snake_case** - Common in C++ standard library and systems programming
 - **camelCase** - Common in modern C++, Google C++ Style Guide
 
+## Issues Encountered & Solutions
+
+### 1. Naming Conventions
+- **Problem**: Used lowercase `prices` for struct and PascalCase `Tracker` for variable
+- **Solution**: Structs/classes use PascalCase (`Prices`), variables use snake_case (`price_tracker`)
+- **Lesson**: Type names are capitalized, instance names are lowercase
+
+### 2. Accessing Struct Members by Index
+- **Problem**: Wanted to access `price_a`, `price_b` using index like `prices[i]`
+- **Solution**: Changed struct to use array: `double prices[2]` instead of named members
+- **Lesson**: Named members can't be indexed; use arrays when you need index access
+
+### 3. Thread Array Syntax
+- **Problem**: Tried `std::thread thread[i](function, args)` to create individual thread
+- **Solution**: Declare array first `std::thread threads[2]`, then assign in loop: `threads[i] = std::thread(...)`
+- **Lesson**: Arrays must be declared before indexing; can't declare individual elements
+
+### 4. Passing Functions to Threads
+- **Problem**: Called function directly: `std::thread(update_price(tracker, i))`
+- **Solution**: Pass function name and arguments separately: `std::thread(update_price, std::ref(tracker), i)`
+- **Lesson**: Thread constructor takes function pointer, then its arguments as separate parameters
+
+### 5. Passing References to Threads
+- **Problem**: Thread tried to copy reference parameter instead of passing by reference
+- **Solution**: Wrap reference arguments with `std::ref()`: `std::thread(func, std::ref(data))`
+- **Lesson**: By default, thread arguments are copied; use `std::ref()` for references
+
+### 6. Random Float Generation
+- **Problem**: `std::uniform_int_distribution<double>` caused compilation error
+- **Solution**: Use `std::uniform_real_distribution<double>` for floating-point numbers
+- **Lesson**: `uniform_int_distribution` only works with integral types; use `uniform_real_distribution` for float/double
+
+### 7. Keeping Threads Running
+- **Problem**: Thread function ran once and exited; wanted continuous execution
+- **Solution**: Added `while(condition)` loop inside thread function, not in main
+- **Lesson**: To simulate continuous updates (like API streams), loop inside the thread function
+
+### 8. Shared Stop Flag with atomic<bool>
+- **Problem**: `std::atomic<bool>` couldn't be passed to thread - "cannot be copied" error
+- **Solution**: Pass by reference using `std::ref(keep_running)` and update function signature to take `std::atomic<bool>&`
+- **Lesson**: `std::atomic` types are non-copyable; must always pass by reference to threads
+
+### 9. User-Controlled Termination
+- **Problem**: Wanted threads to run until user stops them
+- **Solution**: Used `std::cin.get()` in main to block until user presses Enter, then set flag to false
+- **Lesson**: Main thread can wait for input while worker threads run; flag signals graceful shutdown
+
 ## Plan
 
