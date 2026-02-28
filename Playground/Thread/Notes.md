@@ -73,5 +73,121 @@ Start with the simplest possible version:
 - **Solution**: Used `std::cin.get()` in main to block until user presses Enter, then set flag to false
 - **Lesson**: Main thread can wait for input while worker threads run; flag signals graceful shutdown
 
+## Questions & Deeper Understanding
+
+### Q1: Why does `std::thread` need `std::ref()` instead of normal reference passing?
+
+**Answer:** When you pass arguments to `std::thread`, it **copies everything by default** into internal storage. This is a safety feature because:
+- The thread might start running after the original variables have gone out of scope
+- To be safe, `std::thread` makes copies of all arguments
+
+Even if your function signature says `void update_price(Prices& data)`:
+```cpp
+std::thread t(update_price, price_tracker);  // Copies price_tracker!
+```
+
+The thread copies `price_tracker`, then passes that copy by reference to the function. You'd be modifying a copy, not the original!
+
+`std::ref()` tells the thread: "Don't copy this - store a reference to the original object instead."
+
+**Key Difference:**
+- **Normal function calls**: Arguments evaluated immediately, references bind directly
+- **Thread construction**: Arguments stored/copied first, then passed when thread runs
+- **Solution**: Use `std::ref()` to override the copying behavior
+
+---
+
+### Q2: Should primitive values like `i` use `std::ref()` when passed to threads?
+
+**Answer:** No, just pass by value (e.g., `i` not `std::ref(i)`).
+
+Primitive values like `int` should be **copied** so each thread gets its own independent value:
+- Thread 0 needs the value `0`
+- Thread 1 needs the value `1`
+
+If you used `std::ref(i)` with a loop variable, both threads would share a reference to the same variable which:
+1. Changes as the loop continues
+2. Goes out of scope after the loop ends
+3. Could cause both threads to see the wrong value
+
+**Rule of thumb:**
+- Small values (int, double, bool) → copy them (no `std::ref`)
+- Large objects or when you need to modify the original → use `std::ref()`
+
+---
+
+### Q3: Should function parameters use `const int&` or just `int` for copied values?
+
+**Answer:** For small primitives passed by value to threads, use `int i_value`, not `const int& i_value`.
+
+When you pass `i` by value to the thread (copying it), the function should accept it by value. Using `const int&` for a small primitive adds unnecessary indirection with no benefit - it's actually **less efficient** than copying the 4-byte int directly.
+
+**Use references for:**
+- Large objects (structs, vectors, etc.)
+- When you need to modify the original
+- Objects that can't be copied (like `std::atomic`)
+
+**Use plain values for:**
+- Small primitives (int, double, bool, char, etc.)
+
+---
+
+### Q4: Why use `std::atomic<bool>` for `keep_running` but not `std::atomic<int>` for `i_value`?
+
+**Answer:** Because `i_value` is **not shared** between threads - each thread gets its own separate copy!
+
+**`keep_running` (needs atomic):**
+- ONE variable shared by ALL threads
+- All threads read it, main thread writes to it
+- Multiple threads accessing the same memory = race condition
+- Needs `std::atomic` for thread safety
+
+**`i_value` (doesn't need atomic):**
+- Each thread gets its **own private copy**
+- Thread 0 has `i_value = 0`, thread 1 has `i_value = 1`
+- They never share or modify it
+- No other thread touches it = no race condition = no atomic needed
+
+**Thread safety is only needed when:**
+1. Multiple threads access the **same memory location**
+2. At least one thread **writes** to it
+
+---
+
+### Q5: Could we use a mutex instead of `std::atomic` for `keep_running`?
+
+**Answer:** Yes, but `std::atomic<bool>` is better for simple flags.
+
+**Mutex approach:**
+```cpp
+bool keep_running = true;
+std::mutex flag_mutex;
+
+// In threads: must lock/unlock every check
+flag_mutex.lock();
+bool should_continue = keep_running;
+flag_mutex.unlock();
+
+// In main: must lock/unlock to change
+flag_mutex.lock();
+keep_running = false;
+flag_mutex.unlock();
+```
+
+**Why `std::atomic<bool>` is better:**
+- **No locking overhead** - atomic operations are lock-free (usually just a CPU instruction)
+- **Simpler code** - no manual lock/unlock
+- **Faster** - no heavyweight mutex machinery
+- **Designed for this** - simple shared flags are exactly what atomics are for
+
+**Use mutex when:**
+- You need to protect multiple related variables together
+- You have complex operations (read-modify-write sequences)
+- You're accessing non-atomic data structures
+
+**Use atomic when:**
+- Single variable that needs thread-safe read/write
+- Simple flags, counters, or status values
+
 ## Plan
 
