@@ -2,8 +2,9 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-
 #include <random>
+
+#define THRESHOLD (1.25) /*the parentheses prevent unexpected behavior*/
 
 //Shared Memory
 
@@ -27,6 +28,15 @@ void update_price(Prices& price_ds, int i_value, std::atomic<bool>& continue_run
         std::cout << price_ds.prices[i_value] << std::endl;
         
     }
+}
+
+void find_arbitrage(Prices& price_ds, std::atomic<bool>& continue_running){
+    double profit = 0;
+
+    while(continue_running){
+        
+    }
+
 }
 
 int main(){
@@ -62,6 +72,7 @@ int main(){
 // updating the price variables after the generate the number
 
 // a third thread will be reading the data as soon as it updates 
+// can this third thread be the main or a seperate?
 // and calculates the difference to display
 
 // who should display it? should i focus on optimization?

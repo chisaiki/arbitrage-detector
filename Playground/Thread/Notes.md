@@ -73,6 +73,11 @@ Start with the simplest possible version:
 - **Solution**: Used `std::cin.get()` in main to block until user presses Enter, then set flag to false
 - **Lesson**: Main thread can wait for input while worker threads run; flag signals graceful shutdown
 
+### 10. Macro Parentheses
+- **Best Practice**: Always wrap macro values in parentheses: `#define THRESHOLD (1.25)`
+- **Why**: Macros do textual replacement before compilation. Without parentheses, expressions like `100 / THRESHOLD` can fail if the macro is an expression (e.g., `#define THRESHOLD 1 + 0.25` becomes `100 / 1 + 0.25` = 100.25 instead of `100 / (1 + 0.25)` = 80)
+- **Lesson**: Parentheses ensure the macro is treated as a single unit regardless of surrounding operators
+
 ## Questions & Deeper Understanding
 
 ### Q1: Why does `std::thread` need `std::ref()` instead of normal reference passing?
