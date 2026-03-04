@@ -54,7 +54,7 @@ void find_difference(Prices& price_ds, std::atomic<bool>& continue_running){
 int main(){
 
     Prices price_tracker{};
-    std::atomic<bool> keep_running = true;
+    std::atomic<bool> keep_running(true);
 
     //create threads
     std::thread get_price_threads[2];

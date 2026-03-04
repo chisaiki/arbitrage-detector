@@ -5,6 +5,14 @@ Start with the simplest possible version:
 
 IMPORTANT: Lock EVERY access to shared data, both reads and writes.
 
+
+## Next Steps
+- Test locks actually work
+- Test lock-free
+- Measure performance
+
+----------------------------------------------
+
 ## C++ Naming Conventions
 
 | Element | Convention | Example | Notes |
@@ -105,6 +113,20 @@ IMPORTANT: Lock EVERY access to shared data, both reads and writes.
   2. Add thread ID logging to see which thread accesses when
   3. Comment out locks and observe corrupted/garbled output
 - **Lesson**: **GOLDEN RULE of mutexes**: Lock EVERY access (read OR write) to shared data. If even one thread accesses without locking, the entire protection fails. Both readers and writers must use the same mutex.
+
+### 13. Atomic Initialization Syntax (C++ Standard Differences)
+- **Problem**: `std::atomic<bool> keep_running = true;` compiled on MinGW but failed on WSL/GCC 9 with error: "use of deleted function 'std::atomic<bool>::atomic(const std::atomic<bool>&)'"
+- **Root Cause**: C++ standard version differences:
+  - **C++17+** (MinGW default): Has mandatory copy elision - `= true` directly constructs the atomic, no copy attempted
+  - **C++14/C++11** (WSL/GCC 9 default): Treats `= true` as copy initialization - tries to copy temporary to atomic, but atomics are non-copyable (copy constructor deleted)
+- **Solution**: Use direct initialization syntax that works across all C++ standards:
+  ```cpp
+  std::atomic<bool> keep_running(true);   // ✓ Direct initialization
+  std::atomic<bool> keep_running{true};   // ✓ Uniform initialization (C++11+)
+  std::atomic<bool> keep_running = true;  // ❌ Only works in C++17+
+  ```
+- **Alternative Solution**: Compile with C++17 standard: `g++ -std=c++17 ...`
+- **Lesson**: Atomics cannot be copied (by design - copying wouldn't have clear thread-safety semantics). Use direct initialization `()` or uniform initialization `{}` for maximum portability across C++ standards. This ensures code compiles on older compilers and different platforms.
 
 ## Questions & Deeper Understanding
 
@@ -222,5 +244,239 @@ flag_mutex.unlock();
 - Single variable that needs thread-safe read/write
 - Simple flags, counters, or status values
 
-## Plan
+---
 
+## Testing & Verifying Mutex Locks Are Working
+
+Once you've added mutex locks to your code, you need to verify they're actually working and protecting shared data correctly. Here are methods used in practice:
+
+### Learning/Development Methods
+
+#### Method 1: Add Timing to Show Serialization (Best for Learning)
+**Approach:** Add timing measurements to prove threads are waiting for each other
+
+```cpp
+#include <chrono>
+
+void update_price(Prices& price_ds, int i_value, std::atomic<bool>& continue_running){
+    while(continue_running){
+        auto start = std::chrono::steady_clock::now();
+        price_data_access_lock.lock();
+        auto lock_acquired = std::chrono::steady_clock::now();
+        
+        price_ds.prices[i_value] = distrib(gen);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Deliberate delay
+        
+        price_data_access_lock.unlock();
+        
+        auto wait_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            lock_acquired - start).count();
+        if (wait_time > 5) {
+            std::cout << "Thread " << i_value << " waited " << wait_time << "ms for lock\n";
+        }
+    }
+}
+```
+
+**Pros:**
+- Visual proof threads are serializing (waiting for each other)
+- Shows actual wait times - helps understand contention
+- Good for learning how locks affect performance
+
+**Cons:**
+- Requires code modifications
+- Adds overhead from timing calls
+- Only shows contention, doesn't prove correctness completely
+
+---
+
+#### Method 2: Test Without Locks (Break It On Purpose)
+**Approach:** Comment out the locks and observe if things break
+
+```cpp
+// price_data_access_lock.lock();    // COMMENT OUT
+price_ds.prices[i_value] = distrib(gen);
+// price_data_access_lock.unlock();   // COMMENT OUT
+```
+
+**Pros:**
+- Simplest method - just comment out code
+- Shows what happens WITHOUT protection
+- Quick validation that locks matter
+
+**Cons:**
+- Race conditions may not appear immediately (non-deterministic)
+- May need to run multiple times to see failures
+- Doesn't prove locks are working, just shows they're needed
+- Dangerous - could crash or corrupt data
+
+---
+
+#### Method 3: Add Counter to Detect Concurrent Access
+**Approach:** Use a counter to detect if multiple threads enter critical section simultaneously
+
+```cpp
+std::atomic<int> inside_critical_section{0};
+
+void update_price(Prices& price_ds, int i_value, std::atomic<bool>& continue_running){
+    while(continue_running){
+        price_data_access_lock.lock();
+        inside_critical_section++;
+        if (inside_critical_section > 1) {
+            std::cout << "ERROR: Multiple threads in critical section!\n";
+        }
+        
+        price_ds.prices[i_value] = distrib(gen);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));  // Make it more obvious
+        
+        inside_critical_section--;
+        price_data_access_lock.unlock();
+    }
+}
+```
+
+**Pros:**
+- Actively detects mutual exclusion violations
+- Clear error message when locks fail
+- Similar to professional invariant checking
+- Can be left in code as debugging aid
+
+**Cons:**
+- Requires code changes to add counter
+- Adds overhead from atomic operations
+- Only catches violations if they occur during test run
+
+---
+
+### Professional/Industry Methods
+
+#### Method 4: Thread Sanitizer (TSan) - Industry Standard ⭐
+**Approach:** Compile with built-in race condition detector
+
+```bash
+# Compile with ThreadSanitizer
+g++ -fsanitize=thread -g miniarbtirage.cpp -o miniarbtirage
+
+# Run program - TSan reports any race conditions
+./miniarbtirage
+```
+
+**What it detects:**
+- Race conditions (data accessed by multiple threads without synchronization)
+- Exact file names and line numbers
+- Which threads are involved
+- Whether it's read-write or write-write conflict
+
+**Pros:**
+- **Zero code changes needed** - just a compiler flag
+- Catches races you didn't know existed
+- Reports exact locations with line numbers
+- Industry standard at Google, Microsoft, Meta, etc.
+- Much more thorough than manual testing
+- Detects subtle race conditions that don't cause obvious bugs
+
+**Cons:**
+- Not available on all compilers (limited MinGW support on Windows)
+- ~5-15x slowdown when running
+- Increases memory usage significantly
+- May have false positives (rare)
+
+**When to use:** Always, if available. This is the first tool pros reach for.
+
+---
+
+#### Method 5: Assertions & Invariant Checks
+**Approach:** Add `assert()` statements to check assumptions about thread safety
+
+```cpp
+void update_price(Prices& price_ds, int i_value, std::atomic<bool>& continue_running){
+    while(continue_running){
+        assert(!price_data_access_lock.try_lock() && "Lock should already be held!");
+        // Or check data invariants:
+        // assert(price_ds.prices[0] >= 0 && "Price should never be negative");
+    }
+}
+```
+
+**Pros:**
+- Catches violations immediately at runtime
+- Can be disabled in release builds (`-DNDEBUG`)
+- Documents assumptions about thread safety
+- Standard practice in production code
+
+**Cons:**
+- Requires knowing what invariants to check
+- Only works if violation occurs during testing
+- Crashes program when assertion fails (by design)
+
+**When to use:** Throughout development, with assertions checking data consistency and thread safety assumptions.
+
+---
+
+#### Method 6: Code Review
+**Approach:** Have another engineer review the code looking for synchronization issues
+
+**What reviewers check:**
+- All accesses to shared data have locks
+- Same mutex used for all accesses to the same data
+- No lock ordering issues (potential deadlocks)
+- Locks held for minimum necessary time
+- Proper use of `std::lock_guard` or RAII patterns
+
+**Pros:**
+- Catches design issues, not just race conditions
+- Finds logic errors that tools miss
+- Knowledge transfer between team members
+- No code or compiler changes needed
+
+**Cons:**
+- Human error - reviewers can miss issues
+- Time-consuming
+- Requires experienced reviewer
+- Doesn't catch runtime-only issues
+
+**When to use:** Always, for any multithreaded code. Required at most companies before code merges.
+
+---
+
+#### Method 7: Stress Testing
+**Approach:** Run with many threads, high load, for extended periods
+
+```cpp
+// Instead of 2 threads, use 10+
+std::thread get_price_threads[10];
+
+// Let it run for hours/days
+// On multicore system with high contention
+```
+
+**Pros:**
+- Exposes rare race conditions that only occur under load
+- Tests real-world scenarios
+- Finds performance bottlenecks
+- Validates code works under stress
+
+**Cons:**
+- Very time-consuming (hours to days)
+- Race conditions may still not appear (non-deterministic)
+- Requires significant compute resources
+- Hard to debug issues that occur
+
+**When to use:** Before releasing multithreaded code to production. Often run continuously in CI/CD systems.
+
+---
+
+### Recommendation: Which Method to Use?
+
+**For this project (learning):**
+1. **Start with Method 3** (counter) - immediate feedback, teaches you what mutexes do
+2. **Try Method 2** (remove locks) - see what breaks without protection
+3. **Use Method 4** (TSan) if available on your system
+
+**For professional development:**
+1. **Thread Sanitizer (Method 4)** - always, if available
+2. **Code Review (Method 6)** - required for all code
+3. **Assertions (Method 5)** - embedded in code throughout development
+4. **Stress Testing (Method 7)** - before production release
+
+**Golden Rule:** Never assume locks are working. Always verify with at least one method.
