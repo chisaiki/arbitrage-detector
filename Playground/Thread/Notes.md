@@ -3,6 +3,8 @@
 Start with the simplest possible version:
 - Write a program where two threads each randomly update a "price" in shared memory, and a third thread detects when the difference exceeds a threshold. That's the core of what you're building. It's maybe 80 lines of C++. Struggle with that first. The mutex you write there is the same concept you'll use everywhere else.
 
+IMPORTANT: Lock EVERY access to shared data, both reads and writes.
+
 ## C++ Naming Conventions
 
 | Element | Convention | Example | Notes |
@@ -77,6 +79,32 @@ Start with the simplest possible version:
 - **Best Practice**: Always wrap macro values in parentheses: `#define THRESHOLD (1.25)`
 - **Why**: Macros do textual replacement before compilation. Without parentheses, expressions like `100 / THRESHOLD` can fail if the macro is an expression (e.g., `#define THRESHOLD 1 + 0.25` becomes `100 / 1 + 0.25` = 100.25 instead of `100 / (1 + 0.25)` = 80)
 - **Lesson**: Parentheses ensure the macro is treated as a single unit regardless of surrounding operators
+
+### 11. Integer abs() vs Double std::abs()
+- **Problem**: Used `abs()` on doubles - result was whole numbers only (e.g., 83.0 instead of 83.25)
+- **Root Cause**: `abs()` is the integer version - it converts double to int, discarding fractional part
+- **Solution**: Use `std::abs()` or `fabs()` from `<cmath>` for floating-point numbers
+- **Example**: If `abs(95.73 - 12.48)` → converts 83.25 to int 83, returns 83. But `std::abs(95.73 - 12.48)` → preserves 83.25
+- **Lesson**: Always use typed math functions for proper precision: `std::abs()` for doubles, `abs()` only for ints
+
+### 12. ⚠️ CRITICAL: Missing Mutex in Writer Threads (Race Condition)
+- **Problem**: Only locked mutex in `find_difference()` (reader) but NOT in `update_price()` (writers)
+- **Root Cause**: Thought only the reading thread needed protection, didn't realize ALL access to shared data needs synchronization
+- **Consequence**: **Race condition** - reader can access prices while writers are updating them, causing:
+  - Reading partially-updated values (torn reads)
+  - Inconsistent state (reading price[0] from one update, price[1] from another)
+  - Undefined behavior on some architectures
+- **Solution**: Add mutex lock/unlock around the write operation in `update_price()`:
+  ```cpp
+  price_data_access_lock.lock();
+  price_ds.prices[i_value] = distrib(gen);
+  price_data_access_lock.unlock();
+  ```
+- **Testing Strategy**: To verify mutex is working:
+  1. Add delays inside critical sections to make race conditions obvious
+  2. Add thread ID logging to see which thread accesses when
+  3. Comment out locks and observe corrupted/garbled output
+- **Lesson**: **GOLDEN RULE of mutexes**: Lock EVERY access (read OR write) to shared data. If even one thread accesses without locking, the entire protection fails. Both readers and writers must use the same mutex.
 
 ## Questions & Deeper Understanding
 
