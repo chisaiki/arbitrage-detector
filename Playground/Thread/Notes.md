@@ -480,3 +480,156 @@ std::thread get_price_threads[10];
 4. **Stress Testing (Method 7)** - before production release
 
 **Golden Rule:** Never assume locks are working. Always verify with at least one method.
+
+---
+
+## WSL (Windows Subsystem for Linux) Setup & Issues
+
+### Understanding WSL vs Linux Distribution
+
+**Common Confusion:** "I installed the latest WSL but still have old tools"
+
+**Key Concept:** WSL and the Linux distribution are separate:
+
+| Component | What It Is | Version |
+|-----------|-----------|---------|
+| **WSL** | Windows feature that runs Linux | WSL 1 or WSL 2 (latest) |
+| **Linux Distro** | The actual Linux OS (Ubuntu, Debian, etc.) | Ubuntu 20.04, 22.04, 24.04, etc. |
+
+**Analogy:** WSL is like a virtual machine host, Ubuntu is the guest OS you choose to run.
+
+---
+
+### Ubuntu LTS Versions & Support Timeline
+
+| Version | Release Date | Standard Support Ends | Extended Support Ends | Status in 2026 |
+|---------|--------------|----------------------|----------------------|----------------|
+| Ubuntu 20.04 LTS | April 2020 | April 2025 | April 2030 | ⚠️ Past standard support |
+| Ubuntu 22.04 LTS | April 2022 | April 2027 | April 2032 | ✓ Active support |
+| Ubuntu 24.04 LTS | April 2024 | April 2029 | April 2034 | ⭐ Latest LTS, recommended |
+
+**LTS = Long Term Support**: Stable, well-tested versions maintained for 5+ years (10 with paid extended support).
+
+---
+
+### Why Use Ubuntu 24.04 in 2026
+
+**Ubuntu 20.04 Issues (in 2026):**
+- Past standard support (ended April 2025) - no more feature updates
+- Old GCC 9 (from 2019) - 7 years old
+- Older kernel and libraries
+- Limited ThreadSanitizer support
+- Security patches require extended support subscription
+
+**Ubuntu 24.04 Benefits:**
+- Active support until 2029+ 
+- GCC 13+ with full modern C++ support
+- Better ThreadSanitizer and debugging tools
+- Latest security patches included
+- Modern libraries and toolchain
+- Will be supported for years to come
+
+---
+
+### ThreadSanitizer (TSan) Compatibility Issues
+
+**Problem Encountered:**
+1. MinGW on Windows: `-fsanitize=thread` fails with "cannot find -ltsan"
+2. WSL Ubuntu 20.04: TSan crashes with "FATAL: ThreadSanitizer: unexpected memory mapping"
+
+**Root Causes:**
+
+| Platform | Issue | Reason |
+|----------|-------|--------|
+| MinGW/Windows | TSan not available | ThreadSanitizer not supported on MinGW toolchain |
+| WSL1 | TSan crashes | WSL1 memory layout incompatible with TSan |
+| WSL2 Ubuntu 20.04 | TSan crashes or missing libs | Old kernel/GCC, limited TSan support |
+| WSL2 Ubuntu 22.04+ | TSan works (usually) | Better kernel, modern GCC with proper TSan |
+
+**Solutions:**
+
+1. **Best**: Use Ubuntu 24.04 on WSL2
+   ```powershell
+   wsl --install -d Ubuntu-24.04
+   ```
+
+2. **Alternative**: Upgrade GCC on current Ubuntu 20.04
+   ```bash
+   sudo apt-get update
+   sudo apt-get install gcc-11 g++-11 libtsan0
+   g++-11 -fsanitize=thread -std=c++17 -g program.cpp -o program -pthread
+   ```
+
+3. **Fallback**: Use Method 3 (counter detection) - works everywhere
+
+---
+
+### Installing/Switching Ubuntu Versions in WSL
+
+**List installed distributions:**
+```powershell
+wsl --list --verbose
+```
+
+**Install Ubuntu 24.04 (alongside existing):**
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+**Run specific distribution:**
+```powershell
+wsl -d Ubuntu-24.04
+```
+
+**Set default distribution:**
+```powershell
+wsl --set-default Ubuntu-24.04
+```
+
+**Remove old distribution (after migrating):**
+```powershell
+wsl --unregister Ubuntu-20.04
+```
+
+**Note:** You can have multiple distributions installed simultaneously. Your files are in separate filesystems - copy any important work before removing a distribution.
+
+---
+
+### WSL File Access
+
+**From Windows to WSL:**
+```
+\\wsl$\Ubuntu-24.04\home\username\
+```
+
+**From WSL to Windows:**
+```bash
+cd /mnt/c/Users/username/Desktop/
+```
+
+**Best Practice:** Keep development files in WSL filesystem for better performance. WSL accessing Windows drives is slower than native Linux filesystem.
+
+---
+
+### Recommendation for 2026
+
+**For this project:**
+- ✓ Install Ubuntu 24.04 LTS on WSL2
+- ✓ Use modern GCC (13+) with C++17/C++20
+- ✓ ThreadSanitizer should work properly
+- ✓ Future-proof for years of support
+
+**Quick setup:**
+```powershell
+# In PowerShell
+wsl --install -d Ubuntu-24.04
+
+# In WSL (new Ubuntu 24.04)
+sudo apt-get update
+sudo apt-get install build-essential g++
+
+# Verify
+g++ --version  # Should show GCC 13+
+```
+
+Using outdated Ubuntu 20.04 in 2026 is like using Windows 7 - it works but you're missing security updates, modern features, and creating compatibility headaches.
