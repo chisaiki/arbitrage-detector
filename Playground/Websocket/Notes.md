@@ -1,35 +1,10 @@
-# 
+# Notes
 
 ## Library Choice
-µWebSockets: Known for its exceptional performance and low memory footprint, µWebSockets is a highly optimized C++ library with a focus on speed, often outperforming alternatives in benchmarks. It is used by high-traffic services like the trading APIs of Bitfinex and Kraken. The documentation can be less comprehensive than other options, though.
+Boost.Beast and Boost.Asio
 
-1. Performance is Critical for Arbitrage
-    Arbitrage opportunities exist for milliseconds - every microsecond of latency costs money
-    µWebSockets' exceptional speed and low memory footprint directly translate to profit potential
-    Already battle-tested by Bitfinex and Kraken trading APIs
+**Why?**
 
-2. Matches My Architecture
-    My lock-free queue design (from ProjectNotes) pairs perfectly with a fast websocket library
-    Multiple exchange connections fit µWebSockets' efficient connection handling
-    C++ native - integrates cleanly with your threading code
-
-3. Real-World Trading Credibility
-    Used in production by high-frequency trading systems
-    Handles the burst traffic patterns common in crypto markets
-
-# Strategy
-**Read Documentation on µWebSockets:**  
-    1. Start Goal-Oriented: How to "connect to exchange websocket", "handle incoming messages", "parse JSON"  
-
-**Documentation Gaps**  
-    1. Check GitHub issues for common questions  
-    2. Look at tests in the repo - they show real usage  
-    3. Search for "µWebSockets example [your use case]"  
-
-**For µWebSockets Specifically:**  
-Their examples folder is more valuable than formal docs  
-Focus on the client examples first (you're connecting to exchanges)  
-The SSL client example will be essential (exchanges use wss://)  
 
 ## WebSocket Program Structure (Conceptual)
 
