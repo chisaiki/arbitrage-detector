@@ -62,3 +62,32 @@ Boost.Beast and Boost.Asio
 - Run multiple websocket connections (probably in separate threads)
 - Each has its own event loop and callbacks
 - All feed into your central price aggregation system
+
+# ERRORS
+
+## Error: VS Code IntelliSense Cannot Find Boost Headers in WSL
+
+**Symptom:** The C++ code compiles perfectly using `cmake` and `make` in the WSL terminal, but VS Code displays red squiggles under `#include <boost/asio.hpp>` and throws a `fatal error: No such file or directory`. 
+
+**Root Cause:**
+A disconnect between the compiler environment and the editor. The compiler lives inside Linux (WSL) and knows the headers are at `/usr/include/boost`. However, the VS Code UI is running on Windows and is trying to find the Boost library on the `C:\` drive. VS Code needs to be explicitly told to look through the Linux lens and ask CMake for the correct paths.
+
+### Solution: The CMake-to-IntelliSense Handoff
+
+**Step 1: Open VS Code from inside WSL**
+Do not open VS Code from the Windows Start Menu and navigate to the network drive.
+1. Open your WSL terminal.
+2. Navigate to the project directory.
+3. Run the command: `code .`
+*(Verify this worked by checking the bottom-left corner of VS Code for a blue/green badge that says **WSL: Ubuntu**).*
+
+**Step 2: Install Required Extensions (In WSL)**
+Ensure the following Microsoft extensions are installed and explicitly enabled *within the WSL environment*, not just locally on Windows:
+* **C/C++** * **CMake Tools** **Step 3: Change the Configuration Provider**
+Tell the C/C++ extension to stop guessing file paths and get the exact locations directly from your `CMakeLists.txt`.
+1. Open the VS Code Command Palette (`Ctrl` + `Shift` + `P`).
+2. Type and select: **`C/C++: Change Configuration Provider...`**
+3. Select **`CMake Tools`** from the dropdown menu.
+4. *(Optional)* Open the Command Palette again and run **`CMake: Configure`** to force an immediate refresh. 
+
+**Result:** The red squiggles will disappear, and hovering over Boost objects will correctly display the official documentation.
