@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/mishi/OneDrive/Desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
+# Install script for directory: /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/Users/mishi/OneDrive/Desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

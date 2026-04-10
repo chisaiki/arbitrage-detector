@@ -1,5 +1,5 @@
 CMakeFiles/client.dir/client.cpp.o: \
- /mnt/d/Mishita/Grad/OS/Projects/Final/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp \
+ /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/13/iostream \
  /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
