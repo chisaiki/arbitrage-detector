@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/c/Users/mishi/OneDrive/Desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp" "CMakeFiles/client.dir/client.cpp.o" "gcc" "CMakeFiles/client.dir/client.cpp.o.d"
+  "/mnt/d/Mishita/Grad/OS/Projects/Final/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp" "CMakeFiles/client.dir/client.cpp.o" "gcc" "CMakeFiles/client.dir/client.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
