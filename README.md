@@ -8,4 +8,6 @@ cd Project          # move into your project folder
 mkdir build         # create a new empty folder called build
 cd build            # move into that build folder
 cmake ..            # run cmake, pointing it at the parent folder
+make                # create the executable file
+./main_exe          # run the program
 ```
