@@ -1,6 +1,10 @@
 #include <iostream>
 #include <boost/asio.hpp>
 
+void printfunc(const boost::system::error_code& e){
+    std::cout << "I love Anthony very much, and I'm so grateful to him" << std::endl;
+}
+
 int main(){
     std::cout << "Working" << std::endl;
 
@@ -8,8 +12,8 @@ int main(){
 
     boost::asio::steady_timer timer(io_object, boost::asio::chrono::seconds(5));
 
-    timer.wait();
-    std::cout << "Hello World" << std::endl;
+    timer.async_wait(&printfunc);
+    io_object.run();
 
-    return 0;
+    return 0;  
 }
