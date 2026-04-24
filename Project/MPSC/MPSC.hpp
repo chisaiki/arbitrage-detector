@@ -2,6 +2,10 @@
 #ifndef MSPC_QUEUE
 #define MSPC_QUEUE
 
+#include <atomic>
+#include <cstddef>
+#include <iostream>
+
 struct Node{
     int data;
     Node* next;
@@ -10,6 +14,7 @@ struct Node{
 };
 
 namespace MQueue{
+
 template <typename DataType>
     class MPSCQueue{
         private:
@@ -34,10 +39,10 @@ template <typename DataType>
         DataType pop();
 
         /*Peek*/
-        TypeData front();
+        DataType front();
 
         /*Rear*/
-        TypeData rear();
+        DataType rear();
 
         /*Checks if queue has any elements in it: need it for consumer thread*/
         bool isEmpty();
@@ -47,5 +52,5 @@ template <typename DataType>
 
     };
 }
-
+#include "MPSC.cpp"
 #endif
