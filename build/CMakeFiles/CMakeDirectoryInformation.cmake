@@ -3,7 +3,7 @@
 
 # Relative path conversion top directories.
 set(CMAKE_RELATIVE_PATH_TOP_SOURCE "/mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest")
-set(CMAKE_RELATIVE_PATH_TOP_BINARY "/mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/build")
+set(CMAKE_RELATIVE_PATH_TOP_BINARY "/mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build")
 
 # Force unix paths in dependencies.
 set(CMAKE_FORCE_UNIX_PATHS 1)

@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

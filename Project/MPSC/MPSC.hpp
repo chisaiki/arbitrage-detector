@@ -24,7 +24,14 @@ template <typename DataType>
             size_t size_ = 0;
             size_t buffer_size_ = 4;
 
+            
+
         public:
+
+        /*TESTING*/
+            int* int_head;
+            int* int_tail;
+            int int_buffer[4] = {0};
 
         /*Constructors*/
         MPSCQueue();

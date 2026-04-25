@@ -7,6 +7,8 @@
         void MPSCQueue<DataType>::push(){
             if(size_ < buffer_size_){
                 std::cout << "PUSH" << std::endl;
+                int_buffer[int_tail] = 69;
+                int_tail = (int_tail + 1) % 4;
                 size_++;
             }
             std::cout << "size: " << size_ << std::endl;
@@ -31,9 +33,9 @@
           template <typename DataType>
         /*Checks if queue has any elements in it: need it for consumer thread*/
         bool MPSCQueue<DataType>::isEmpty(){
-            std::cout << "Empty Called" << std::endl;
+            std::cout << "Empty?" << std::endl;
 
-            if (head_ == tail_ && size_ == 0){
+            if (int_head == int_tail && size_ == 0){
                 return true;
             }
 
@@ -44,7 +46,7 @@
         /*Checks if buffer is full*/
         bool MPSCQueue<DataType>::isFull(){
             std::cout << "Full?" << std::endl;
-            if (head_ == tail_ && buffer_size_ == size_){
+            if (int_head == int_tail && buffer_size_ == size_){
                 return true;
             }
             return false;
@@ -52,7 +54,8 @@
 
         /*Constructors*/
         template <typename DataType>
-        MPSCQueue<DataType>::MPSCQueue(){}
+        MPSCQueue<DataType>::MPSCQueue(){
+        }
         
         template <typename DataType>
         MPSCQueue<DataType>::MPSCQueue(const DataType data){
