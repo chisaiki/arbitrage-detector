@@ -6,31 +6,22 @@
 #include <cstddef>
 #include <iostream>
 
-struct Node{
-    int data;
-    Node* next;
-
-    Node(const int value, Node* next = nullptr) : data(value), next(next){}
-};
-
 namespace MQueue{
 
 template <typename DataType>
     class MPSCQueue{
         private:
-            std::atomic<DataType*> head_;
-            std::atomic<DataType*> tail_;
+            std::atomic<size_t> head_;
+            std::atomic<size_t> tail_; 
             DataType buffer[4];
-            size_t size_ = 0;
-            size_t buffer_size_ = 4;
+            const size_t capacity_ = 4;
 
-            
-
+        
         public:
 
         /*TESTING*/
-            int* int_head;
-            int* int_tail;
+            int int_head;
+            int int_tail;
             int int_buffer[4] = {0};
 
         /*Constructors*/
@@ -41,10 +32,10 @@ template <typename DataType>
         ~MPSCQueue();
 
         /*Enqueue Atomic Functions is a must?*/
-        void push();
+        void push(const DataType Data);
 
         /*Dequeue (Only done by one thread)*/
-        DataType pop();
+        DataType pop(); 
 
         /*Peek*/
         DataType front();
