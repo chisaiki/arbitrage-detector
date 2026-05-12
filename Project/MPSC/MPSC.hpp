@@ -26,6 +26,7 @@ template <typename DataType, size_t Capacity = 1024>
             /*Alienate cache lines for head and tail to avoid false sharing*/
             alignas(CacheLineSize) std::atomic<size_t> tail_{0};
             alignas(CacheLineSize) std::atomic<size_t> head_{0};
+            
             /*Ensures element 0 starts cleanly on its own cache boundary*/
             alignas(CacheLineSize) DataType buffer[1024] = {};
 
@@ -48,7 +49,7 @@ template <typename DataType, size_t Capacity = 1024>
         void push(const DataType Data);
 
         /*Dequeue (Only done by one thread)*/
-        DataType pop(); 
+        bool pop(); 
 
         /*Peek*/
         DataType front();

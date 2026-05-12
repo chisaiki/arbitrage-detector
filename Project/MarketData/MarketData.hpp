@@ -4,9 +4,10 @@
 namespace Arbitrage{
     
     struct alignas(8) MarketItem{
-        uint64_t itemId;                 // Bytes 0 - 7
+        uint64_t itemId{0};                 // Bytes 0 - 7
         uint64_t timestamp;              // Bytes 8 - 15
-        uint32_t priceCents;             // Bytes 16 - 19
-        std::atomic<bool> can_overwrite; // Byte 20 (Exactly 1 byte)
+        uint32_t priceCents{0};             // Bytes 16 - 19
+        std::atomic<bool> can_overwrite{true}; // Byte 20 (Exactly 1 byte)
+        /*This flag tells the producer if the consumer has already validated the data*/
     };
 }
