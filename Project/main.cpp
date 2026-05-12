@@ -4,8 +4,10 @@
 
 int main(){
     MQueue::MPSCQueue<int> Object;
-    Arbitrage::OrderBook<TopOfBook> Book;
+    Arbitrage::OrderBook<Arbitrage::TopOfBook> Book;
 
     std::cout << "Object made" << std::endl;
-    Object.print();~
+    Object.print();
+
+    Book.print();
 }

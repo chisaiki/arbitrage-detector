@@ -18,10 +18,10 @@
             uint32_t index = head_.load(std::memory_order_relaxed);
 
             /*Find the location of the head in the buffer*/
-            uint32_t buffer_slot = current_read_idx & (Capacity - 1);
+            uint32_t buffer_slot = index & (Capacity - 1);
             
             /*Get access to the current MarketData*/
-            DataType& slot_data = buffer[slot_idx];
+            DataType& slot_data = buffer[buffer_slot];
             
             /*If the queue is NOT empty*/
             if(slot_data.can_overwrite == false){

@@ -1,7 +1,11 @@
+#ifndef ORDER_BOOK
+#define ORDER_BOOK
+
+#include <iostream>
+
 namespace Arbitrage{
 
     template <typename BookData>
-
     class OrderBook{
 
         private:
@@ -20,3 +24,6 @@ namespace Arbitrage{
 
 
 }
+
+#include "OrderBook.cpp"
+#endif
