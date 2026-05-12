@@ -55,7 +55,7 @@
         /*Checks if queue has any elements in it: need it for consumer thread*/
         bool MPSCQueue<DataType, Capacity>::isEmpty() const{
             /*Explicitly load both atomic values with zero synchronization overhead*/
-            return head_.load(std::memory_order_relaxed) == tail_.load(std::memory_order_relaxed);
+            return head_.load(std::memory_order_relaxed) == tail_.load(std::memory_order_aquire);
         }
 
        template <typename DataType, size_t Capacity>
