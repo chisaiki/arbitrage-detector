@@ -57,7 +57,7 @@ template <typename DataType, size_t Capacity = 1024>
         DataType rear();
 
         /*Checks if queue has any elements in it: need it for consumer thread*/
-        bool isEmpty();
+        bool isEmpty() const;
 
         /*Checks if buffer is full*/
         bool isFull();
