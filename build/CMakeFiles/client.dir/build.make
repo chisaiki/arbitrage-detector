@@ -53,7 +53,7 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
+CMAKE_SOURCE_DIR = /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build
@@ -70,18 +70,18 @@ include CMakeFiles/client.dir/progress.make
 include CMakeFiles/client.dir/flags.make
 
 CMakeFiles/client.dir/client.cpp.o: CMakeFiles/client.dir/flags.make
-CMakeFiles/client.dir/client.cpp.o: /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp
+CMakeFiles/client.dir/client.cpp.o: /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp
 CMakeFiles/client.dir/client.cpp.o: CMakeFiles/client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/client.dir/client.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/client.dir/client.cpp.o -MF CMakeFiles/client.dir/client.cpp.o.d -o CMakeFiles/client.dir/client.cpp.o -c /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/client.dir/client.cpp.o -MF CMakeFiles/client.dir/client.cpp.o.d -o CMakeFiles/client.dir/client.cpp.o -c /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp
 
 CMakeFiles/client.dir/client.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/client.dir/client.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp > CMakeFiles/client.dir/client.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp > CMakeFiles/client.dir/client.cpp.i
 
 CMakeFiles/client.dir/client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/client.dir/client.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp -o CMakeFiles/client.dir/client.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest/client.cpp -o CMakeFiles/client.dir/client.cpp.s
 
 # Object files for target client
 client_OBJECTS = \
@@ -106,6 +106,6 @@ CMakeFiles/client.dir/clean:
 .PHONY : CMakeFiles/client.dir/clean
 
 CMakeFiles/client.dir/depend:
-	cd /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build/CMakeFiles/client.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/build/CMakeFiles/client.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/client.dir/depend
 

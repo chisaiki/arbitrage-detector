@@ -21,7 +21,7 @@ ArbitrageEngine_BINARY_DIR:STATIC=/mnt/c/users/mishi/onedrive/desktop/Graduate/C
 ArbitrageEngine_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-ArbitrageEngine_SOURCE_DIR:STATIC=/mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
+ArbitrageEngine_SOURCE_DIR:STATIC=/mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
 
 //The directory containing a CMake configuration file for Boost.
 Boost_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0

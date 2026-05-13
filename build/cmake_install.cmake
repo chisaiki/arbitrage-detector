@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/users/mishi/onedrive/desktop/Graduate/courses/advancedos/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
+# Install script for directory: /mnt/c/users/mishi/onedrive/desktop/Graduate/Courses/AdvancedOS/FinalProject/arbitrage-detector/Playground/Websocket/BoostTest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

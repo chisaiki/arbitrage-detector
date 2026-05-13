@@ -23,4 +23,17 @@ namespace Arbitrage{
         array[id].lastUpdateTimestamp = Item.timestamp;
     }
 
+    /*ONLY FOR SINGLE THREAD CHECK USAGE*/
+    template <typename BookData>
+    bool OrderBook<BookData>::checkArbitrage(){
+        // Arbitrage exists if best bid at one exchange > best ask at another
+        if (array[0].bestBidPrice > array[1].bestAskPrice && array[1].bestAskPrice > 0) {
+            return true;
+        }
+        if (array[1].bestBidPrice > array[0].bestAskPrice && array[0].bestAskPrice > 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -15,7 +15,10 @@ namespace Arbitrage{
             ~OrderBook() = default;
 
             void updateData(Arbitrage::MarketItem& Item, int id);
-
+            
+            
+            /*ONLY FOR TESTING USAGE*/
+            bool checkArbitrage();
             void print();
 
 
