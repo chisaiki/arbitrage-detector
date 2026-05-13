@@ -24,7 +24,6 @@
             /*Get access to the current MarketData*/
             DataType& slot_data = buffer[buffer_slot];
 
-
             /*If the queue is NOT empty*/
             if(slot_data.can_overwrite.load(std::memory_order_acquire) == false){ 
                 
@@ -35,13 +34,18 @@
 
                 /*Find the appropriate order book location for the other website's data*/
                 auto& otherExchangeData = localBook.array[otherID];
+                
+                /*Check if the data is newer*/
+                if (slot_data.timestamp > currentExchangeBook.lastUpdateTimestamp) {
+                    
+                    /*See if the current sell price is lower than what the other website is asking for*/
+                    if (slot_data.priceCents < otherExchangeData.bestBidPrice) {
+                        arbFound = true;
+                    }
 
-                /*See if the current sell price is lower than what the other website is asking for*/
-                if (slot_data.priceCents < otherExchangeData.bestBidPrice){
-                    arbFound = true; /*I have found a price thats lower than what I was trying to buy it for*/
+                    /*Update book with the fresh data*/
+                    localBook.updateData(slot_data, slot_data.exchangeId);
                 }
-               
-                localBook.updateData(slot_data, slot_data.exchangeId);
 
                 /*Let producers know the slot is now available*/
                 slot_data.can_overwrite.store(true, std::memory_order_release);
@@ -53,11 +57,12 @@
             return false;
         }
 
+
         template <typename DataType, size_t Capacity>        
         /*Peek*/
         DataType MPSCQueue<DataType, Capacity>::front(){
-            // return int_buffer[int_head];
-            return DataType{};
+            uint32_t index = head_.load(std::memory_order_relaxed);
+            return buffer[index];
         }
 
         template <typename DataType, size_t Capacity>
