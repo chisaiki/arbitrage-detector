@@ -2,20 +2,19 @@
 #define ORDER_BOOK
 
 #include <iostream>
+#include "../MarketData/MarketData.hpp"
 
 namespace Arbitrage{
 
     template <typename BookData>
-    class OrderBook{
-
-        private:
-        
-            BookData array[2] = {};
-
+    class OrderBook{        
         public:
 
+            BookData array[2] = {};
             OrderBook() = default;
             ~OrderBook() = default;
+
+            void updateData(Arbitrage::MarketItem& Item, int id);
 
             void print();
 

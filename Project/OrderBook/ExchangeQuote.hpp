@@ -1,3 +1,6 @@
+#ifndef EXCHANGE_QUOTE
+#define EXCHANGE_QUOTE  
+
 namespace Arbitrage{
 
     struct alignas(32) TopOfBook {
@@ -11,3 +14,5 @@ namespace Arbitrage{
     };
 
 }
+
+#endif

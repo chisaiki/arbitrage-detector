@@ -1,3 +1,6 @@
+#ifndef MARKET_DATA
+#define MARKET_DATA 
+
 #include <cstdint>
 #include <atomic>
 
@@ -17,3 +20,5 @@ namespace Arbitrage{
 false sharing between threads. Now each data item has its own 
 cache line. Although it uses an unecessary amount of additional space
 false sharing misses should improve performance.*/
+
+#endif

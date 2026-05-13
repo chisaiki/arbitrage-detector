@@ -15,6 +15,12 @@ namespace Arbitrage{
 
             std::cout << "______________________________ " << std::endl;
         }
-}
+    }
+
+    template <typename BookData>
+    void OrderBook<BookData>::updateData(Arbitrage::MarketItem& Item, int id){
+        array[id].bestAskPrice = Item.priceCents;
+        array[id].lastUpdateTimestamp = Item.timestamp;
+    }
 
 }

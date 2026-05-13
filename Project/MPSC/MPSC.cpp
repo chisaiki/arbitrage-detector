@@ -23,17 +23,31 @@
             
             /*Get access to the current MarketData*/
             DataType& slot_data = buffer[buffer_slot];
-            
+
+
             /*If the queue is NOT empty*/
-            if(slot_data.can_overwrite == false){
-                /*Do the arbitrage operations in here instead of the buffer copy*/
-                //if (slot_data.priceCents < )
+            if(slot_data.can_overwrite.load(std::memory_order_acquire) == false){ 
+                
+                bool arbFound = false;
+
+                /*Find the website data of the other website*/
+                int otherID = 1 - slot_data.exchangeId;
+
+                /*Find the appropriate order book location for the other website's data*/
+                auto& otherExchangeData = localBook.array[otherID];
+
+                /*See if the current sell price is lower than what the other website is asking for*/
+                if (slot_data.priceCents < otherExchangeData.bestBidPrice){
+                    arbFound = true; /*I have found a price thats lower than what I was trying to buy it for*/
+                }
                
+                localBook.updateData(slot_data, slot_data.exchangeId);
+
                 /*Let producers know the slot is now available*/
                 slot_data.can_overwrite.store(true, std::memory_order_release);
                 head_.store(index + 1, std::memory_order_release);
                 
-                return true;
+                return arbFound;
             }
             
             return false;
