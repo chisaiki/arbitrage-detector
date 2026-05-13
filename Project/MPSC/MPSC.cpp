@@ -1,4 +1,5 @@
     #include "MPSC.hpp"
+   
     
     namespace MQueue{
 
@@ -14,7 +15,7 @@
         
         template <typename DataType, size_t Capacity>
         /*Dequeue (Only done by one thread)*/
-        bool MPSCQueue<DataType, Capacity>::pop(){
+        bool MPSCQueue<DataType, Capacity>::pop(Arbitrage::OrderBook<Arbitrage::TopOfBook>& localBook){
             uint32_t index = head_.load(std::memory_order_relaxed);
 
             /*Find the location of the head in the buffer*/
@@ -26,6 +27,7 @@
             /*If the queue is NOT empty*/
             if(slot_data.can_overwrite == false){
                 /*Do the arbitrage operations in here instead of the buffer copy*/
+                //if (slot_data.priceCents < )
                
                 /*Let producers know the slot is now available*/
                 slot_data.can_overwrite.store(true, std::memory_order_release);
@@ -71,11 +73,13 @@
         template<typename DataType, size_t Capacity>
         void MPSCQueue<DataType, Capacity>::print(){                
             for (int i = 0; i < Capacity; i++){
-                std::cout << "[" << buffer[i] << "]" << std::endl;
+                std::cout << "Data: " << i << std::endl;
+                std::cout << "[" << buffer[i].itemId << "]" << std::endl;
+                std::cout << "[" << buffer[i].timestamp << "]" << std::endl;
+                std::cout << "[" << buffer[i].priceCents << "]" << std::endl;
             }
-
-            std::cout << "Cache Line Size: " << CacheLineSize << std::endl;
-
+                std::cout << "Cache Line Size: " << CacheLineSize << std::endl;
+            
         }
 
     }

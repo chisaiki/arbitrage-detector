@@ -7,6 +7,9 @@
 #include <cstddef>
 #include <new> // Required for hardware cache line definitions
 
+#include "../OrderBook/OrderBook.hpp"
+#include "../OrderBook/ExchangeQuote.hpp"
+
 namespace MQueue{
 
 template <typename DataType, size_t Capacity = 1024>
@@ -49,7 +52,7 @@ template <typename DataType, size_t Capacity = 1024>
         void push(const DataType Data);
 
         /*Dequeue (Only done by one thread)*/
-        bool pop(); 
+        bool pop(Arbitrage::OrderBook<Arbitrage::TopOfBook>& localBook); 
 
         /*Peek*/
         DataType front();
