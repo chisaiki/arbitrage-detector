@@ -25,3 +25,18 @@ no matching function for call to ‘std::atomic<long unsigned int>::compare_exch
 **Example Fix:**
 - If using `uint32_t` for `index`, declare `tail_` as `std::atomic<uint32_t>`.
 - If using `size_t` for `tail_`, declare `index` as `size_t`.
+
+
+# Design Notescompare_exchange_w
+Why compare_exchange_weak instead of compare_exchange_strong?
+C++ gives you two versions of this function: compare_exchange_strong and compare_exchange_weak.
+
+To understand why low-latency engineers use weak, you have to look at non-x86 CPU architectures (like ARM or PowerPC). These chips don't have a single LOCK CMPXCHG instruction. Instead, they use a two-step mechanism called Load-Link / Store-Conditional (LL/SC).
+
+On ARM chips, a CAS can experience a Spurious Failure. This means the instruction can fail and return false even if tail_ perfectly matches current_tail. Spurious failures happen if the OS triggers a context switch, or if an unrelated hardware thread simply reads the same cache line at the wrong microscopic instant.
+
+compare_exchange_strong: Checks for spurious failures internally. If the hardware reports a failure but the values actually matched, the C++ standard library wraps the instruction in its own hidden assembly loop to try again.
+
+compare_exchange_weak: Does absolutely no checking. If the hardware aborts, it instantly returns false and lets your code handle it.
+
+The Verdict: Because my try_push logic is already sitting inside a while(true) loop, a spurious failure simply spins your loop around and tries again natively. Using weak avoids generating redundant, nested retry loops in the compiler's assembly output. (Note: On x86 hardware, strong and weak generate the exact same assembly, but using weak inside loops is standard low-latency C++ practice for cross-platform mechanical sympathy).
