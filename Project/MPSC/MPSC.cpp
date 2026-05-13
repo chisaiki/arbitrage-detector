@@ -5,13 +5,35 @@
 
         template <typename DataType, size_t Capacity> /*WHY DO I NEED THIS??*/
         /*Enqueue Atomic Functions is a must?*/
-        void MPSCQueue<DataType, Capacity>::push(const DataType Data){
-            // if(int_tail - int_head < capacity_){
-            //     std::cout << "push" << std::endl;
-            //     int_buffer[int_tail & (capacity_ - 1)] = Data;
-            //     int_tail = int_tail + 1;
-            // }
+        bool MPSCQueue<DataType, Capacity>::push(const DataType& Data){
+            
+                uint32_t index = tail_.load(std::memory_order_relaxed);
+
+                while(true){
+                    /*Find the location of the tail in the buffer*/
+                uint32_t buffer_slot = index & (Capacity - 1);
+                DataType& slot_data = buffer[buffer_slot];
+
+                if(!slot_data.can_overwrite.load(std::memory_order_acquire) == true){ 
+                    /*Buffer is full DROP the data packet (Need to change this later)*/
+                    return false;
+                }
+
+                if (tail_.compare_exchange_weak(index, index + 1, 
+                                        std::memory_order_release, 
+                                        std::memory_order_relaxed)) {
+
+                    slot_data.timestamp = Data.timestamp;      
+                    slot_data.priceCents = Data.priceCents;
+
+                    /*Let consumer know the slot has new data to check*/
+                    slot_data.can_overwrite.store(false, std::memory_order_release);
+                    return true;
+                }
+            }
+
         }
+        
         
         template <typename DataType, size_t Capacity>
         /*Dequeue (Only done by one thread)*/
@@ -36,7 +58,7 @@
                 auto& otherExchangeData = localBook.array[otherID];
                 
                 /*Check if the data is newer*/
-                if (slot_data.timestamp > currentExchangeBook.lastUpdateTimestamp) {
+                if (slot_data.timestamp > otherExchangeData.lastUpdateTimestamp) {
                     
                     /*See if the current sell price is lower than what the other website is asking for*/
                     if (slot_data.priceCents < otherExchangeData.bestBidPrice) {

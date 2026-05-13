@@ -27,8 +27,8 @@ template <typename DataType, size_t Capacity = 1024>
             #endif
 
             /*Alienate cache lines for head and tail to avoid false sharing*/
-            alignas(CacheLineSize) std::atomic<size_t> tail_{0};
-            alignas(CacheLineSize) std::atomic<size_t> head_{0};
+            alignas(CacheLineSize) std::atomic<uint32_t> tail_{0};
+            alignas(CacheLineSize) std::atomic<uint32_t> head_{0};
             
             /*Ensures element 0 starts cleanly on its own cache boundary*/
             alignas(CacheLineSize) DataType buffer[1024] = {};
@@ -49,7 +49,7 @@ template <typename DataType, size_t Capacity = 1024>
         ~MPSCQueue() = default;
 
         /*Enqueue Atomic Functions is a must?*/
-        void push(const DataType Data);
+        bool push(const DataType& Data);
 
         /*Dequeue (Only done by one thread)*/
         bool pop(Arbitrage::OrderBook<Arbitrage::TopOfBook>& localBook); 

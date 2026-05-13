@@ -14,3 +14,12 @@
                 return popped;
             }
 ```
+
+### Push()
+```cpp
+    // if(int_tail - int_head < capacity_){
+    //     std::cout << "push" << std::endl;
+    //     int_buffer[int_tail & (capacity_ - 1)] = Data;
+    //     int_tail = int_tail + 1;
+    // }
+```
