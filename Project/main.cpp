@@ -5,6 +5,7 @@
 
 #include <thread>
 #include <vector>
+#include <iostream>
 #include <chrono>
 
 
@@ -22,10 +23,16 @@ void mock_producer(MQueue::MPSCQueue<Arbitrage::MarketItem, 1024>& queue, int id
         Arbitrage::MarketItem item;
         item.itemId = 12345;
         item.exchangeId = id;
-        item.priceCents = rand() % 1000; // Random price between 1000
+        // Switch back to random price generation for both producers
+        item.priceCents = rand() % 100000000000000; // Random price between 0 and 999
         item.timestamp = getCurrentNanos();
-        
-        queue.push(item); 
+
+        queue.push(item);
+        // if (queue.push(item)) {
+        //     std::cout << "[Producer " << id << "] Pushed item: price=" << item.priceCents << ", timestamp=" << item.timestamp << std::endl;
+        // } else {
+        //     std::cout << "[Producer " << id << "] Queue full, item dropped." << std::endl;
+        // }
         // Sleep for a few microseconds to simulate high-frequency bursts
     }
 }
@@ -33,25 +40,29 @@ void mock_producer(MQueue::MPSCQueue<Arbitrage::MarketItem, 1024>& queue, int id
 
 
 int main() {
+    std::cout << "[Main] Program started." << std::endl;
+
     // 1. Initialize your shared infrastructure
     MQueue::MPSCQueue<Arbitrage::MarketItem, 1024> queue;
     Arbitrage::OrderBook<Arbitrage::TopOfBook> book;
 
+    // Initialize bestBidPrice for both exchanges to a high value for testing
+    book.array[0].bestBidPrice = 10000;
+    book.array[1].bestBidPrice = 10000;
+
     // 2. Launch Producer Threads (WebSockets or Mocks)
-    // We pass the queue by reference and an ID (0 or 1)
     std::thread producerA(mock_producer, std::ref(queue), 0);
     std::thread producerB(mock_producer, std::ref(queue), 1);
 
     // 3. The Consumer Loop (The "Hot Path")
-    // This thread should ideally be "pinned" to a core to avoid context switching
+    size_t popCount = 0;
     while (running.load(std::memory_order_relaxed)) {
-        
-        // Your optimized pop function we just finished
         if (queue.pop(book)) {
-            // Because pop() returns arbFound, this only triggers on profit!
             std::cout << ">>> ARBITRAGE DETECTED! <<<\n";
         }
-        
+        if (++popCount % 100000 == 0) {
+            std::cout << "[Consumer] Still running, popCount=" << popCount << std::endl;
+        }
         // Note: No 'sleep' or 'yield' here. In HFT, we 'busy-wait' 
         // to ensure 0ns reaction time to new data.
     }
@@ -60,6 +71,7 @@ int main() {
     producerA.join();
     producerB.join();
 
+    std::cout << "[Main] Program exiting." << std::endl;
     return 0;
 }
 
