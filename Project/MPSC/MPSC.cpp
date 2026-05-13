@@ -62,6 +62,7 @@ namespace MQueue{
         /*If the queue is NOT empty*/
         if(slot_data.can_overwrite.load(std::memory_order_acquire) == false){ 
             
+            /*I might need to move this entire logic to an order book function*/
             bool arbFound = false;
 
             /*Find the website data of the other website*/

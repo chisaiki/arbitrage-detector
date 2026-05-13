@@ -1,5 +1,11 @@
 # arbitrage-detector
 
+## Current Build Instructions
+cd Project
+g++ -o benchmark benchmark.cpp
+
+ - You can see the stats of the MSPCQueue implementation
+
 ## Build Instructions
 The project includes a CMakeLists.txt. Create a build folder in the Project directory, then run cmake. See instructions below.
 
