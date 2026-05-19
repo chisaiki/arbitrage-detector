@@ -19,12 +19,10 @@ namespace MQueue{
 
             /*Check if slot has already been processed by consumer*/
             if(!slot_data.can_overwrite.load(std::memory_order_acquire)){ 
-                /*Buffer is full --> DROP the data packet (Need to change this later)*/
+                /*Buffer is full --> DROP the data packet (Need to change this later?)*/
 
                 uint32_t actual_tail = tail_.load(std::memory_order_relaxed);
                 if (index != actual_tail) {
-                    // We were looking at an old tail position! 
-                    // Update our index guess and spin the loop to try the fresh tail.
                     index = actual_tail;
                     continue; 
                 }
