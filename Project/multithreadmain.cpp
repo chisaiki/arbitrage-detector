@@ -26,7 +26,7 @@ void mock_producer(MQueue::MPSCQueue<Arbitrage::MarketItem, 1024>& queue, int id
         item.exchangeId = id;
         
         /*Random price generation for producers*/
-        item.priceCents = rand() % 100000000000000; // Random price between 0 and 999
+        item.priceCents = rand() % 100000000000000; 
         item.timestamp = getCurrentNanos();
 
         queue.push(item);
