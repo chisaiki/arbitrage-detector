@@ -3,7 +3,7 @@
 Currently you can only run the test files in Project/multithreadmain.cpp to see how it runs against a custom mutex based std::queue implementation. 
 
 $ cd Project/Testing  
-$ g++ -std=c++17 -O2 -pthread benchmark.cpp -o benchmark (IF ON WSL or any Linux Based System)   
+$ g++ -std=c++17 -O2 -pthread benchmark.cpp -o benchmark (This program assumes you are on a linux machines or using a linux sub-system)   
 $ ./benchmark  
 
 NOTE: There is a bug that can sometimes cause a deadlock within the threads, so you may have to run the executable multiple times. 
